@@ -43,15 +43,28 @@ const moviePromise = new Promise((resolve, reject) => {
 // THEN = PROMISE!!!
 // a promise has a 'then'. The 'then' will run whenever resolve is called inside the promise.
 moviePromise.then((dataGivenToResolve) => {
-    console.log(dataGivenToResolve)
-}).catch((dataGivenToReject) => {
-    // if reject is called, then catch runs
-    console.log(dataGivenToReject)
+    return new Promise((resolve, reject) => {
+        // console.log(dataGivenToResolve)
+        const id = dataGivenToResolve.results[0].id
+        const castUrl = `${apiBaseUrl}/movie/${id}/credits?api_key=${apiKey}`
+        request.get(castUrl, (err, response, body) => {
+            const parsedBody = JSON.parse(body)
+            resolve(parsedBody);
+        })
+    })
+}).then((actorData) => {
+    // console.log(actorData)
+    const actorId = actorData.cast[0].id;
+    const peopleUrl = `${apiBaseUrl}/person/${actorId}?api_key=${apiKey}`
+    request.get(peopleUrl,(err, response, body) => {
+        const parsedData = JSON.parse(body);
+        console.log(parsedData)
+
+    })
 })
 
-console.log(moviePromise)
 
-// const castUrl = `${apiBaseUrl}/${movieData.results[0].id}/credits?api_key=${apiKey}`
-// request.get(castUrl, (err, response, body) => {
-
-// })
+// Promises are always in one of these 3 states:
+// -pending
+// -fulfilled
+// -rejected
